@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Wallet Personality",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/index.js",
+      "env": {
+        "ALCHEMY_API_KEY": "VXzG_kaKoR4ws4PRyK8gj2RQ5iyEf4XO"
+      }
+    }
+  ]
+}
