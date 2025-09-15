@@ -335,3 +335,48 @@ body {
   border-radius: 12px;
   color: #6c757d;
 }
+.input-group-reload {
+  position: relative;
+}
+
+.reload-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  z-index: 10;
+}
+
+.reload-btn:hover {
+  color: #495057;
+  background-color: #f8f9fa;
+}
+
+.reload-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.form-control-custom {
+  padding-right: 35px !important;
+}
+
+.reload-animation {
+  animation: spin 0.5s linear;
+}
+
+@keyframes spin {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}

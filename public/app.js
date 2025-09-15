@@ -260,3 +260,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+function reloadAddress() {
+  const input = document.getElementById("addr");
+  const reloadBtn = document.querySelector(".reload-btn i");
+  const notice = document.getElementById("privacyNotice");
+
+  // Add spinning animation
+  reloadBtn.classList.add("reload-animation");
+
+  // Clear everything and reset to normal state
+  input.value = "";
+  input.classList.remove("private-mode");
+  notice.style.display = "none";
+  currentAddress = "";
+
+  // Focus back on the input
+  input.focus();
+
+  // Remove animation after it completes
+  setTimeout(() => {
+    reloadBtn.classList.remove("reload-animation");
+  }, 600);
+}

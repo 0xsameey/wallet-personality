@@ -16,7 +16,10 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <!-- Custom styles -->
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -53,12 +56,22 @@
                 <label for="addr" class="form-label fw-semibold"
                   >Ethereum Address</label
                 >
-                <input
-                  id="addr"
-                  class="form-control form-control-custom"
-                  placeholder="0x1234...abcd or paste full address"
-                  maxlength="42"
-                />
+                <div class="input-group-reload">
+                  <input
+                    id="addr"
+                    class="form-control form-control-custom"
+                    placeholder="0x1234...abcd or paste full address"
+                    maxlength="42"
+                  />
+                  <button
+                    type="button"
+                    class="reload-btn"
+                    onclick="reloadAddress()"
+                    title="Clear address to try another wallet"
+                  >
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </div>
               </div>
 
               <div class="d-flex gap-3 flex-wrap">
@@ -86,9 +99,17 @@
             <div
               class="d-flex align-items-center justify-content-center gap-2 mb-2"
             >
-              <span>🚀</span>
-              <strong>Built for the Community by Øxsameey </strong>
-              <span>🚀</span>
+              <strong
+                >Built for the Community by <img src="oxsameyl.png""
+                alt="Øxsameey Logo" style="height: 20px; width: auto;
+                vertical-align: middle" />
+                <a
+                  href="https://x.com/0xsameey"
+                  target="_blank"
+                  style="color: #1da1f2; text-decoration: none"
+                  >Øxsameey</a
+                >
+              </strong>
             </div>
             <p class="mb-0 small">
               Powered by Ethereum blockchain data • Not financial advice • Share
