@@ -335,6 +335,7 @@ body {
   border-radius: 12px;
   color: #6c757d;
 }
+
 .input-group-reload {
   position: relative;
 }
@@ -378,5 +379,286 @@ body {
   }
   to {
     transform: translateY(-50%) rotate(360deg);
+  }
+}
+
+/* ==== NEW TWITTER SHARE CARD STYLES ==== */
+
+.share-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px dashed #e9ecef;
+}
+
+.btn-twitter-share {
+  background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3);
+}
+
+.btn-twitter-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(29, 161, 242, 0.4);
+  color: white;
+}
+
+.btn-download-share {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.875rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-download-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+  color: white;
+}
+
+/* Share Card Modal */
+.share-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.share-modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.share-card-container {
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.share-card {
+  width: 500px;
+  height: 300px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  margin: 0 1rem;
+}
+
+.share-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="20" cy="20" r="1.5"/></g></svg>');
+  opacity: 0.3;
+}
+
+.share-card-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.share-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.share-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.share-card-confidence {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+
+.share-card-personality {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.share-card-emoji {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.share-card-personality-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.share-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.share-card-badges {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.share-card-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+}
+
+.share-card-watermark {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+.share-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-modal-close:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+.share-modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* Responsive adjustments for share card */
+@media (max-width: 576px) {
+  .share-card {
+    width: 90vw;
+    max-width: 400px;
+    height: 250px;
+    padding: 1.5rem;
+  }
+
+  .share-card-emoji {
+    font-size: 2.5rem;
+  }
+
+  .share-card-personality-text {
+    font-size: 1.2rem;
+  }
+
+  .share-modal-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .btn-twitter-share,
+  .btn-download-share {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Success notification animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
   }
 }
