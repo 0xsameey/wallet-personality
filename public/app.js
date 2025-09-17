@@ -299,16 +299,7 @@ function createShareModal() {
         </div>
       </div>
       
-      <div class="share-modal-actions">
-        <button class="btn btn-download-share" onclick="downloadShareCard()">
-          <i class="fas fa-download"></i>
-          Download Image
-        </button>
-        <button class="btn btn-twitter-share" onclick="shareToTwitter()">
-          <i class="fab fa-twitter"></i>
-          Share to Twitter
-        </button>
-      </div>
+      
     </div>
   `;
 
