@@ -285,15 +285,7 @@ function createShareModal() {
               ${badgeElements}
             </div>
             <div class="share-card-watermark">
-             
-                
-                <a
-                  href="https://x.com/0xsameey"
-                  target="_blank"
-                  style="color: #ffffffff; text-decoration: none"
-                  >ETH</a
-                >
-              
+              WalletPersonality.app
             </div>
           </div>
         </div>
@@ -329,25 +321,111 @@ function downloadShareCard() {
   const shareCard = document.getElementById("shareCard");
   if (!shareCard) return;
 
-  // Use html2canvas to convert the card to image
-  html2canvas(shareCard, {
-    backgroundColor: null,
-    scale: 2,
+  // Show loading state
+  const downloadBtn = document.querySelector(".btn-download-share");
+  const originalHtml = downloadBtn.innerHTML;
+  downloadBtn.innerHTML =
+    '<i class="fas fa-spinner fa-spin"></i> Generating...';
+  downloadBtn.disabled = true;
+
+  // Mobile-optimized html2canvas options
+  const isMobile = window.innerWidth <= 768;
+  const canvasOptions = {
+    backgroundColor: "#667eea",
+    scale: isMobile ? 3 : 2, // Higher scale for mobile
     width: 500,
     height: 300,
     useCORS: true,
-  })
+    allowTaint: true,
+    foreignObjectRendering: true,
+    imageTimeout: 15000,
+    removeContainer: true,
+    scrollX: 0,
+    scrollY: 0,
+    windowWidth: 500,
+    windowHeight: 300,
+  };
+
+  // Use html2canvas to convert the card to image
+  html2canvas(shareCard, canvasOptions)
     .then((canvas) => {
-      const link = document.createElement("a");
-      link.download = `wallet-personality-${Date.now()}.png`;
-      link.href = canvas.toDataURL();
-      link.click();
+      // Mobile-specific handling
+      if (isMobile) {
+        // Create blob for mobile
+        canvas.toBlob(
+          (blob) => {
+            if (
+              navigator.share &&
+              navigator.canShare &&
+              navigator.canShare({
+                files: [
+                  new File([blob], "wallet-personality.png", {
+                    type: "image/png",
+                  }),
+                ],
+              })
+            ) {
+              // Use native sharing if available
+              const file = new File(
+                [blob],
+                `wallet-personality-${Date.now()}.png`,
+                { type: "image/png" }
+              );
+              navigator
+                .share({
+                  title: "My Wallet Personality",
+                  text: `Check out my wallet personality: ${
+                    currentPersonalityData?.personality || "Mystery Wallet"
+                  }`,
+                  files: [file],
+                })
+                .catch((error) => {
+                  console.log("Native share failed:", error);
+                  // Fallback to download
+                  downloadImageBlob(blob);
+                });
+            } else {
+              // Fallback to download
+              downloadImageBlob(blob);
+            }
+          },
+          "image/png",
+          1.0
+        );
+      } else {
+        // Desktop handling
+        const link = document.createElement("a");
+        link.download = `wallet-personality-${Date.now()}.png`;
+        link.href = canvas.toDataURL("image/png", 1.0);
+        link.click();
+      }
     })
     .catch((error) => {
       console.error("Error generating image:", error);
       // Fallback: open in new tab
       fallbackShareCard();
+    })
+    .finally(() => {
+      // Reset button
+      downloadBtn.innerHTML = originalHtml;
+      downloadBtn.disabled = false;
     });
+}
+
+function downloadImageBlob(blob) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `wallet-personality-${Date.now()}.png`;
+  link.style.display = "none";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // Clean up
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 1000);
 }
 
 function fallbackShareCard() {
@@ -405,12 +483,7 @@ function fallbackShareCard() {
                 )
                 .join("")}
             </div>
-            <div class="share-card-watermark">  <a
-                  href="https://x.com/0xsameey"
-                  target="_blank"
-                  style="color: #ffffffff; text-decoration: none"
-                  >ETH</a
-                ></div>
+            <div class="share-card-watermark">WalletPersonality.app</div>
           </div>
         </div>
         <script>
@@ -434,31 +507,32 @@ function shareToTwitter() {
   twitterBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
   twitterBtn.disabled = true;
 
-  // Generate image and share
-  html2canvas(shareCard, {
-    backgroundColor: null,
-    scale: 2,
+  // Check if mobile
+  const isMobile = window.innerWidth <= 768;
+
+  // Mobile-optimized canvas options
+  const canvasOptions = {
+    backgroundColor: "#667eea",
+    scale: isMobile ? 3 : 2,
     width: 500,
     height: 300,
     useCORS: true,
-  })
+    allowTaint: true,
+    foreignObjectRendering: true,
+    imageTimeout: 15000,
+    removeContainer: true,
+    scrollX: 0,
+    scrollY: 0,
+    windowWidth: 500,
+    windowHeight: 300,
+  };
+
+  // Generate image and share
+  html2canvas(shareCard, canvasOptions)
     .then((canvas) => {
       // Convert to blob
       canvas.toBlob(
         (blob) => {
-          // Create a temporary URL for the image
-          const imageUrl = URL.createObjectURL(blob);
-
-          // Create a temporary link to download the image first
-          const link = document.createElement("a");
-          link.href = imageUrl;
-          link.download = `wallet-personality-${Date.now()}.png`;
-          link.style.display = "none";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
-          // Then open Twitter with text (user will manually attach the downloaded image)
           const { personality, badges } = currentPersonalityData;
           const memeData =
             personalityMemes[personality] ||
@@ -468,20 +542,48 @@ function shareToTwitter() {
             badges.length > 0
               ? `\n🏆 Badges: ${badges.slice(0, 3).join(", ")}`
               : "";
-          const tweetText = `I just discovered my wallet personality! ${memeData.emoji}\n\n🎯 Result: ${personality}${badgeText}\n\nWhat's your wallet's personality? Check yours at https://wallet-personality.vercel.app\n\n#WalletPersonality #Crypto #Ethereum #DeFi\n\n📸 Image downloaded - attach it to your tweet!`;
 
-          const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            tweetText
-          )}`;
-          window.open(twitterUrl, "_blank", "width=550,height=420");
+          if (isMobile) {
+            // Mobile: Try native sharing first
+            if (navigator.share) {
+              const file = new File(
+                [blob],
+                `wallet-personality-${Date.now()}.png`,
+                { type: "image/png" }
+              );
+              const shareData = {
+                title: "My Wallet Personality",
+                text: `I just discovered my wallet personality! ${memeData.emoji}\n\n🎯 Result: ${personality}${badgeText}\n\nWhat's your wallet's personality? Check yours at WalletPersonality.app\n\n#WalletPersonality #Crypto #Ethereum #DeFi`,
+                files: [file],
+              };
 
-          // Show success message
-          showShareSuccess();
+              if (navigator.canShare && navigator.canShare(shareData)) {
+                navigator.share(shareData).catch((error) => {
+                  console.log("Native share failed:", error);
+                  // Fallback to download + Twitter
+                  downloadAndShareMobile(blob, personality, badges, memeData);
+                });
+              } else {
+                // Fallback to download + Twitter
+                downloadAndShareMobile(blob, personality, badges, memeData);
+              }
+            } else {
+              // Fallback to download + Twitter
+              downloadAndShareMobile(blob, personality, badges, memeData);
+            }
+          } else {
+            // Desktop: Download + Twitter
+            downloadImageBlob(blob);
 
-          // Clean up
-          setTimeout(() => {
-            URL.revokeObjectURL(imageUrl);
-          }, 1000);
+            const tweetText = `I just discovered my wallet personality! ${memeData.emoji}\n\n🎯 Result: ${personality}${badgeText}\n\nWhat's your wallet's personality? Check yours at WalletPersonality.app\n\n#WalletPersonality #Crypto #Ethereum #DeFi\n\n📸 Image downloaded - attach it to your tweet!`;
+
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+              tweetText
+            )}`;
+            window.open(twitterUrl, "_blank", "width=550,height=420");
+
+            showShareSuccess();
+          }
         },
         "image/png",
         1.0
@@ -499,6 +601,136 @@ function shareToTwitter() {
     });
 }
 
+function downloadAndShareMobile(blob, personality, badges, memeData) {
+  // Download the image
+  downloadImageBlob(blob);
+
+  // Prepare Twitter text
+  const badgeText =
+    badges.length > 0 ? `\n🏆 Badges: ${badges.slice(0, 3).join(", ")}` : "";
+  const tweetText = `I just discovered my wallet personality! ${memeData.emoji}\n\n🎯 Result: ${personality}${badgeText}\n\nWhat's your wallet's personality? Check yours at WalletPersonality.app\n\n#WalletPersonality #Crypto #Ethereum #DeFi\n\n📸 Image downloaded - attach it to your tweet!`;
+
+  // For mobile, we'll use a more direct approach
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    tweetText
+  )}`;
+
+  // Try different approaches for mobile
+  if (isMobileApp()) {
+    // If in mobile app, use location.href
+    setTimeout(() => {
+      location.href = twitterUrl;
+    }, 500);
+  } else {
+    // If in mobile browser, use window.open with mobile-specific settings
+    const popup = window.open(twitterUrl, "_blank");
+    if (!popup) {
+      // If popup blocked, show instructions
+      showMobileShareInstructions(tweetText);
+    }
+  }
+
+  showShareSuccess();
+}
+
+function isMobileApp() {
+  // Detect if running in mobile app webview
+  return (
+    /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    ) &&
+    (typeof window.orientation !== "undefined" ||
+      navigator.userAgent.includes("Mobile"))
+  );
+}
+
+function showMobileShareInstructions(tweetText) {
+  const instructionsDiv = document.createElement("div");
+  instructionsDiv.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    z-index: 10001;
+    max-width: 90vw;
+    text-align: center;
+    font-family: Inter, sans-serif;
+  `;
+
+  instructionsDiv.innerHTML = `
+    <h4 style="color: #333; margin-bottom: 1rem;">Share to Twitter</h4>
+    <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.5;">
+      Your image has been downloaded! Copy the text below and paste it into a new Twitter post, then attach the downloaded image.
+    </p>
+    <textarea readonly style="width: 100%; height: 120px; padding: 1rem; border: 2px solid #e9ecef; border-radius: 10px; font-size: 14px; resize: none;">${tweetText}</textarea>
+    <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center;">
+      <button onclick="copyToClipboard('${tweetText.replace(
+        /'/g,
+        "\\'"
+      )}'); this.parentElement.parentElement.remove();" style="background: #1da1f2; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600;">
+        Copy Text
+      </button>
+      <button onclick="this.parentElement.parentElement.remove()" style="background: #6c757d; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600;">
+        Close
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(instructionsDiv);
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showCopySuccess();
+    });
+  } else {
+    // Fallback for older browsers
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+    showCopySuccess();
+  }
+}
+
+function showCopySuccess() {
+  const successMsg = document.createElement("div");
+  successMsg.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    z-index: 10002;
+    font-family: Inter, sans-serif;
+    font-weight: 500;
+  `;
+  successMsg.innerHTML = `
+    <i class="fas fa-check-circle me-2"></i>
+    Text copied to clipboard!
+  `;
+
+  document.body.appendChild(successMsg);
+
+  setTimeout(() => {
+    if (successMsg.parentNode) {
+      successMsg.parentNode.removeChild(successMsg);
+    }
+  }, 2000);
+}
+
 function shareTwitterTextOnly() {
   const { personality, badges } = currentPersonalityData;
   const memeData =
@@ -506,7 +738,7 @@ function shareTwitterTextOnly() {
 
   const badgeText =
     badges.length > 0 ? `\n🏆 Badges: ${badges.slice(0, 3).join(", ")}` : "";
-  const tweetText = `I just discovered my wallet personality! ${memeData.emoji}\n\n🎯 Result: ${personality}${badgeText}\n\nWhat's your wallet's personality? Check yours at https://wallet-personality.vercel.app\n\n#WalletPersonality #Crypto #Ethereum #DeFi`;
+  const tweetText = `I just discovered my wallet personality! ${memeData.emoji}\n\n🎯 Result: ${personality}${badgeText}\n\nWhat's your wallet's personality? Check yours at WalletPersonality.app\n\n#WalletPersonality #Crypto #Ethereum #DeFi`;
 
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     tweetText
